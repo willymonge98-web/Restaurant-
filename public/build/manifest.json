@@ -1,7 +1,7 @@
 {
-  "_fonts-BANGno4n.css": {
-    "file": "assets/fonts-BANGno4n.css",
-    "src": "_fonts-BANGno4n.css"
+  "_fonts-CzeLeWgl.css": {
+    "file": "assets/fonts-CzeLeWgl.css",
+    "src": "_fonts-CzeLeWgl.css"
   },
   "_fraunces-500-normal-BTR4KCeb.woff": {
     "file": "assets/fraunces-500-normal-BTR4KCeb.woff",
@@ -60,7 +60,7 @@
     "src": "_source-sans-3-700-normal-CkzU-mV9.woff2"
   },
   "resources/css/app.css": {
-    "file": "assets/app-BgG-LHae.css",
+    "file": "assets/app-QDN-aebe.css",
     "name": "app",
     "names": [
       "app.css"
