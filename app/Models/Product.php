@@ -14,6 +14,7 @@ class Product extends Model
         'sku',
         'type',
         'description',
+        'image_path',
         'price',
         'cost_price',
         'track_stock',
@@ -23,6 +24,27 @@ class Product extends Model
         'is_active',
         'is_available',
     ];
+
+    public function imageUrl(): ?string
+    {
+        if (! $this->image_path) {
+            return null;
+        }
+
+        // Support both public/images/... (committed demo assets) and storage/... uploads.
+        if (str_starts_with($this->image_path, 'images/')) {
+            return asset($this->image_path);
+        }
+
+        return asset('storage/'.$this->image_path);
+    }
+
+    public function priceCdf(?float $rate = null): float
+    {
+        $rate ??= (float) RestaurantSetting::current()->exchange_rate;
+
+        return round((float) $this->price * max(0.0001, $rate), 0);
+    }
 
     protected function casts(): array
     {

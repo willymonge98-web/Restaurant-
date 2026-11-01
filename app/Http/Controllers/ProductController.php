@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class ProductController extends Controller
@@ -15,8 +16,9 @@ class ProductController extends Controller
         $products = Product::with('category', 'recipe')
             ->when($request->type, fn ($q, $t) => $q->where('type', $t))
             ->when($request->q, fn ($q, $term) => $q->where('name', 'like', "%{$term}%"))
+            ->when($request->category, fn ($q, $c) => $q->whereHas('category', fn ($cq) => $cq->where('slug', $c)->orWhere('name', $c)))
             ->orderBy('name')
-            ->paginate(25)
+            ->paginate(24)
             ->withQueryString();
 
         return view('products.index', compact('products'));
@@ -32,7 +34,12 @@ class ProductController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
-        $product = Product::create($this->validated($request));
+        $data = $this->validated($request);
+        unset($data['image']);
+        if ($request->hasFile('image')) {
+            $data['image_path'] = $request->file('image')->store('products', 'public');
+        }
+        $product = Product::create($data);
 
         return redirect()->route('products.index')->with('success', 'Produit créé: '.$product->name);
     }
@@ -47,7 +54,15 @@ class ProductController extends Controller
 
     public function update(Request $request, Product $product): RedirectResponse
     {
-        $product->update($this->validated($request));
+        $data = $this->validated($request);
+        unset($data['image']);
+        if ($request->hasFile('image')) {
+            if ($product->image_path) {
+                Storage::disk('public')->delete($product->image_path);
+            }
+            $data['image_path'] = $request->file('image')->store('products', 'public');
+        }
+        $product->update($data);
 
         return redirect()->route('products.index')->with('success', 'Produit mis à jour.');
     }
@@ -67,6 +82,7 @@ class ProductController extends Controller
             'sku' => ['nullable', 'string', 'max:50'],
             'type' => ['required', 'in:food,drink'],
             'description' => ['nullable', 'string'],
+            'image' => ['nullable', 'image', 'max:4096'],
             'price' => ['required', 'numeric', 'min:0'],
             'cost_price' => ['nullable', 'numeric', 'min:0'],
             'track_stock' => ['sometimes', 'boolean'],

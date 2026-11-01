@@ -184,5 +184,7 @@ class DatabaseSeeder extends Seeder
                 [...$table, 'status' => DiningTable::STATUS_LIBRE, 'is_active' => true]
             );
         }
+
+        $this->call(CongoleseDishesSeeder::class);
     }
 }

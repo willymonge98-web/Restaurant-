@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('title', $product->exists ? 'Modifier produit' : 'Nouveau produit')
 @section('content')
-<form method="POST" action="{{ $product->exists ? route('products.update', $product) : route('products.store') }}" class="erp-card max-w-2xl space-y-4 p-6">
+<form method="POST" action="{{ $product->exists ? route('products.update', $product) : route('products.store') }}" enctype="multipart/form-data" class="erp-card max-w-2xl space-y-4 p-6">
     @csrf
     @if ($product->exists) @method('PUT') @endif
     <div class="grid gap-4 sm:grid-cols-2">
@@ -43,6 +43,13 @@
         <div class="sm:col-span-2">
             <label class="text-sm font-medium">Description</label>
             <textarea name="description" rows="3" class="mt-1 w-full rounded-xl border border-stone-300 px-3 py-2">{{ old('description', $product->description) }}</textarea>
+        </div>
+        <div class="sm:col-span-2">
+            <label class="text-sm font-medium">Photo</label>
+            <input type="file" name="image" accept="image/*" class="mt-1 w-full rounded-xl border border-stone-300 px-3 py-2">
+            @if ($product->imageUrl())
+                <img src="{{ $product->imageUrl() }}" alt="" class="mt-2 h-28 w-40 rounded-lg object-cover">
+            @endif
         </div>
     </div>
     <div class="flex flex-wrap gap-4 text-sm">
